@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "E-Tasbeeh",
+    "slug": "e-tasbeeh",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.zizdoun.etasbeeh",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#001F3F"
+      },
+      "permissions": [
+        "VIBRATE"
+      ],
+      "edgeToEdgeEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bc236432-ea90-4b9d-b201-fdac62119082"
+      }
+    }
+  }
+}
