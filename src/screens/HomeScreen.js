@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useDhikr } from '../context/DhikrContext';
+import { useSettings } from '../context/SettingsContext';
+import { useTranslation } from 'react-i18next';
 import { DHIKR_PRESETS } from '../data/dhikrPresets';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,18 +12,23 @@ const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
     const {
-        startNewSession, // Import new function
+        startNewSession, 
         dailyDhikrQueue,
         setTargetCount,
         targetCount,
-        resetQueue,
         dailyTotal
     } = useDhikr();
+    
+    const { theme, language } = useSettings();
+    const { t } = useTranslation();
     const navigation = useNavigation();
 
     const [showCustomModal, setShowCustomModal] = useState(false);
-    // Track selected Dhikr IDs (Multi-Select)
     const [selectedDhikrIds, setSelectedDhikrIds] = useState([]);
+
+    const isRTL = language === 'ar';
+    const flexDirection = isRTL ? 'row-reverse' : 'row';
+    const textAlign = isRTL ? 'right' : 'left';
 
     const handlePressDhikr = (item) => {
         setSelectedDhikrIds(prev => {
@@ -37,11 +44,9 @@ export default function HomeScreen() {
         const selectedItems = DHIKR_PRESETS.filter(item => selectedDhikrIds.includes(item.id));
 
         if (selectedItems.length > 0) {
-            // Use atomic update to avoid race conditions
             startNewSession(selectedItems);
             navigation.navigate('Tasbeeh');
         } else if (dailyDhikrQueue.length > 0) {
-            // Resume functionality
             navigation.navigate('Tasbeeh');
         }
     };
@@ -54,66 +59,105 @@ export default function HomeScreen() {
     const Counts = [33, 100, 1000];
 
     return (
-        <SafeAreaView style={styles.container}>
-            {/* Daily Effort Card - Reduced height */}
-            <View style={styles.dailyEffortCard}>
-                <Text style={styles.dailyEffortLabel}>جهد اليوم</Text>
-                <Text style={styles.dailyEffortValue}>{dailyTotal}</Text>
-                <Text style={styles.dailyEffortSub}>تسبيحة</Text>
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            
+            {/* Top Header */}
+            <View style={[styles.topHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <TouchableOpacity 
+                    style={[styles.iconBtn, { backgroundColor: theme.colors.surface }]}
+                    onPress={() => navigation.navigate('Settings')}
+                >
+                    <Text style={{ fontSize: 22 }}>⚙️</Text>
+                </TouchableOpacity>
+                
+                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('appName')}</Text>
+                
+                {/* Spacer to balance the header if needed, or another icon */}
+                <View style={{ width: 40 }} /> 
             </View>
 
-            {/* Daily Azkar Button - Reduced margin */}
-            <TouchableOpacity
-                style={styles.azkarBtn}
-                onPress={() => navigation.navigate('DhikrViewer')}
-            >
-                <Text style={styles.azkarBtnText}>أذكار الصباح والمساء</Text>
-            </TouchableOpacity>
+            {/* Daily Effort Card */}
+            <View style={[styles.dailyEffortCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, flexDirection }]}>
+                {/* Left Side: Stats */}
+                <View style={{ flex: 1 }}>
+                    <Text style={[styles.dailyEffortValue, { color: theme.colors.primary, textShadowColor: theme.colors.primary, textAlign }]}>
+                        {dailyTotal}
+                    </Text>
+                    <Text style={[styles.dailyEffortSub, { color: theme.colors.textSecondary, textAlign }]}>{t('tasbeeh', {defaultValue: 'Tasbeeh'})}</Text>
+                </View>
 
-            {/* Header - Removed margin */}
-            <View style={styles.header}>
-                <Text style={styles.headerTitle}>المسبحة الإلكترونية</Text>
+                {/* Right Side: Azkar Shortcut Icon */}
+                <TouchableOpacity
+                    style={[styles.miniAzkarBtn, { backgroundColor: theme.colors.background, borderColor: theme.colors.primary }]}
+                    onPress={() => navigation.navigate('DhikrViewer')}
+                >
+                     <Text style={{ fontSize: 20 }}>📖</Text>
+                </TouchableOpacity>
             </View>
 
-            {/* Main Content Area - Flexible to take up remaining space */}
+            {/* Main Content Area */}
             <View style={styles.contentArea}>
                 {/* Count Selector */}
-                <View style={styles.countSelectorContainer}>
-                    <Text style={styles.sectionTitle}>عدد التكرار:</Text>
-                    <View style={styles.countButtons}>
+                <View style={[styles.countSelectorContainer, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+                    <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary, textAlign }]}>{t('target')}:</Text>
+                    <View style={[styles.countButtons, { flexDirection }]}>
                         {Counts.map((count) => (
                             <TouchableOpacity
                                 key={count}
-                                style={[styles.countBtn, targetCount === count && styles.countBtnActive]}
+                                style={[
+                                    styles.countBtn, 
+                                    { backgroundColor: theme.colors.border },
+                                    targetCount === count && { backgroundColor: theme.colors.primary }
+                                ]}
                                 onPress={() => setTargetCount(count)}
                             >
-                                <Text style={[styles.countBtnText, targetCount === count && styles.countBtnTextActive]}>{count}</Text>
+                                <Text style={[
+                                    styles.countBtnText, 
+                                    { color: theme.colors.text },
+                                    targetCount === count && { color: '#FFFFFF' }
+                                ]}>{count}</Text>
                             </TouchableOpacity>
                         ))}
                         <TouchableOpacity
-                            style={[styles.countBtn, ![33, 100, 1000].includes(targetCount) && styles.countBtnActive]}
+                            style={[
+                                styles.countBtn, 
+                                { backgroundColor: theme.colors.border },
+                                ![33, 100, 1000].includes(targetCount) && { backgroundColor: theme.colors.primary }
+                            ]}
                             onPress={() => setShowCustomModal(true)}
                         >
-                            <Text style={[styles.countBtnText, ![33, 100, 1000].includes(targetCount) && styles.countBtnTextActive]}>
-                                {![33, 100, 1000].includes(targetCount) ? targetCount : 'مخصص'}
+                            <Text style={[
+                                styles.countBtnText, 
+                                { color: theme.colors.text },
+                                ![33, 100, 1000].includes(targetCount) && { color: '#FFFFFF' }
+                            ]}>
+                                {![33, 100, 1000].includes(targetCount) ? targetCount : '+'}
                             </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
 
-                {/* Dhikr Grid - 9 items (3x3) */}
+                {/* Dhikr Grid */}
                 <View style={styles.gridContainer}>
-                    <View style={styles.grid}>
+                    <View style={[styles.grid, { flexDirection }]}>
                         {DHIKR_PRESETS.map((item) => {
                             const isSelected = selectedDhikrIds.includes(item.id);
                             return (
                                 <TouchableOpacity
                                     key={item.id}
-                                    style={[styles.card, isSelected && styles.cardSelected]}
+                                    style={[
+                                        styles.card, 
+                                        { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                                        isSelected && { backgroundColor: theme.colors.primary + '20', borderColor: theme.colors.primary }
+                                    ]}
                                     onPress={() => handlePressDhikr(item)}
                                 >
-                                    {isSelected && <View style={styles.indicator} />}
-                                    <Text style={[styles.cardText, isSelected && styles.cardTextSelected]}>{item.text}</Text>
+                                    {isSelected && <View style={[styles.indicator, { backgroundColor: theme.colors.primary, shadowColor: theme.colors.primary }]} />}
+                                    <Text style={[
+                                        styles.cardText, 
+                                        { color: theme.colors.text },
+                                        isSelected && { fontWeight: 'bold' }
+                                    ]}>{item.text}</Text>
                                 </TouchableOpacity>
                             );
                         })}
@@ -121,15 +165,19 @@ export default function HomeScreen() {
                 </View>
             </View>
 
-            {/* Start Button - Fixed at bottom of safe area */}
+            {/* Start Button */}
             <View style={styles.footer}>
                 <TouchableOpacity
-                    style={[styles.startBtn, selectedDhikrIds.length === 0 && dailyDhikrQueue.length === 0 && styles.startBtnDisabled]}
+                    style={[
+                        styles.startBtn, 
+                        { backgroundColor: theme.colors.primary, shadowColor: theme.colors.primary },
+                        selectedDhikrIds.length === 0 && dailyDhikrQueue.length === 0 && { backgroundColor: theme.colors.border, shadowOpacity: 0 }
+                    ]}
                     onPress={startSession}
                     disabled={selectedDhikrIds.length === 0 && dailyDhikrQueue.length === 0}
                 >
                     <Text style={styles.startBtnText}>
-                        {selectedDhikrIds.length > 0 ? `ابدأ (${selectedDhikrIds.length})` : 'ابدأ'}
+                        {selectedDhikrIds.length > 0 ? `${t('start')} (${selectedDhikrIds.length})` : t('start')}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -146,136 +194,99 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#020617', // Slate 950
-        padding: 16, // Reduced padding
+        padding: 16,
     },
-    // Flex container to hold Grid and Selector
+    topHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 15,
+        paddingHorizontal: 5,
+    },
+    iconBtn: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 2,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
     contentArea: {
         flex: 1,
-        justifyContent: 'center', // Center vertically
+        justifyContent: 'center',
         gap: 10,
     },
     dailyEffortCard: {
-        backgroundColor: '#1E293B',
         borderRadius: 20,
-        paddingVertical: 15, // Reduced
+        paddingVertical: 15,
         paddingHorizontal: 20,
         alignItems: 'center',
-        marginBottom: 10, // Reduced margin
+        marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#334155',
-        flexDirection: 'row-reverse',
-        justifyContent: 'center',
-        gap: 15,
-        shadowColor: '#10B981',
+        justifyContent: 'space-between',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 12,
         elevation: 8,
     },
     dailyEffortLabel: {
-        color: '#94A3B8',
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: '500',
     },
     dailyEffortValue: {
-        color: '#34D399',
-        fontSize: 28, // Slightly smaller
+        fontSize: 28,
         fontWeight: '800',
-        textShadowColor: 'rgba(16, 185, 129, 0.3)',
         textShadowOffset: { width: 0, height: 2 },
         textShadowRadius: 6,
     },
     dailyEffortSub: {
-        color: '#64748B',
         fontSize: 12,
-        marginTop: 10,
+        marginTop: 5,
         fontWeight: '500',
     },
-    azkarBtn: {
-        backgroundColor: '#0F172A',
-        paddingVertical: 12,
-        borderRadius: 16,
+    miniAzkarBtn: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 8,
         borderWidth: 1,
-        borderColor: '#10B981',
-        flexDirection: 'row-reverse',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
         elevation: 3,
-    },
-    azkarBtnText: {
-        color: '#10B981',
-        fontSize: 16,
-        fontWeight: '700',
-        letterSpacing: 0.5,
-    },
-    header: {
-        alignItems: 'center',
-        marginBottom: 5,
-    },
-    headerTitle: {
-        fontSize: 22,
-        fontWeight: '800',
-        color: '#F1F5F9',
-        letterSpacing: 0.5,
     },
     countSelectorContainer: {
         marginBottom: 5,
-        backgroundColor: '#1E293B',
         padding: 10,
         borderRadius: 16,
         borderWidth: 1,
-        borderColor: '#334155',
     },
     sectionTitle: {
-        color: '#CBD5E1',
         marginBottom: 8,
-        textAlign: 'right',
         fontSize: 12,
         fontWeight: '600',
     },
     countButtons: {
-        flexDirection: 'row-reverse',
         justifyContent: 'space-between',
     },
     countBtn: {
-        backgroundColor: '#334155',
         paddingVertical: 8,
         paddingHorizontal: 10,
         borderRadius: 12,
-        borderWidth: 1,
-        borderColor: 'transparent',
         minWidth: 55,
         alignItems: 'center',
     },
-    countBtnActive: {
-        backgroundColor: '#10B981',
-        borderColor: '#059669',
-        shadowColor: '#10B981',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.4,
-        shadowRadius: 6,
-        elevation: 4,
-    },
     countBtnText: {
-        color: '#F8FAFC',
         fontWeight: '600',
         fontSize: 12,
-    },
-    countBtnTextActive: {
-        color: '#FFFFFF',
-        fontWeight: '800',
     },
     gridContainer: {
         marginBottom: 5,
         flexShrink: 1,
     },
     grid: {
-        flexDirection: 'row-reverse',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         rowGap: 8,
@@ -283,29 +294,12 @@ const styles = StyleSheet.create({
     card: {
         width: '31%',
         aspectRatio: 1,
-        backgroundColor: '#1E293B',
         borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 4,
         borderWidth: 1,
-        borderColor: '#334155',
-        marginBottom: 0,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
         elevation: 2,
-    },
-    cardSelected: {
-        borderColor: '#10B981',
-        backgroundColor: '#064E3B',
-        borderWidth: 1.5,
-        shadowColor: '#10B981',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-        elevation: 5,
     },
     indicator: {
         position: 'absolute',
@@ -314,41 +308,27 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#34D399',
-        shadowColor: '#34D399',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.6,
         shadowRadius: 4,
     },
     cardText: {
-        color: '#E2E8F0',
         textAlign: 'center',
         fontSize: 13,
         fontWeight: '600',
         lineHeight: 18,
     },
-    cardTextSelected: {
-        color: '#FFFFFF',
-        fontWeight: '700',
-    },
     footer: {
         marginTop: 5,
     },
     startBtn: {
-        backgroundColor: '#10B981',
-        paddingVertical: 14, // Reduced
+        paddingVertical: 14,
         borderRadius: 18,
         alignItems: 'center',
-        shadowColor: '#10B981',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 10,
         elevation: 6,
-    },
-    startBtnDisabled: {
-        backgroundColor: '#334155',
-        shadowOpacity: 0,
-        elevation: 0,
     },
     startBtnText: {
         color: '#FFFFFF',

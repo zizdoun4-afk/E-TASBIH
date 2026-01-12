@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Modal, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useSettings } from '../context/SettingsContext';
 
 export default function CustomCountModal({ visible, onClose, onConfirm }) {
     const [value, setValue] = useState('');
+    const { t } = useTranslation();
+    const { theme, language } = useSettings();
+
+    const isRTL = language === 'ar';
 
     const handleConfirm = () => {
         const num = parseInt(value, 10);
@@ -23,26 +29,36 @@ export default function CustomCountModal({ visible, onClose, onConfirm }) {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.overlay}
             >
-                <View style={styles.modalContainer}>
-                    <Text style={styles.title}>أدخل عدد التكرار</Text>
+                <View style={[styles.modalContainer, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+                    <Text style={[styles.title, { color: theme.colors.text }]}>{t('enterCount')}</Text>
 
                     <TextInput
-                        style={styles.input}
+                        style={[
+                            styles.input, 
+                            { 
+                                backgroundColor: theme.colors.background, 
+                                color: theme.colors.text, 
+                                borderColor: theme.colors.border 
+                            }
+                        ]}
                         keyboardType="number-pad"
-                        placeholder="مثال: 50"
-                        placeholderTextColor="#64748B"
+                        placeholder={t('countExample')}
+                        placeholderTextColor={theme.colors.textSecondary}
                         value={value}
                         onChangeText={setValue}
                         maxLength={5}
                         autoFocus
                     />
 
-                    <View style={styles.actions}>
-                        <TouchableOpacity style={styles.btnCancel} onPress={onClose}>
-                            <Text style={styles.btnText}>إلغاء</Text>
+                    <View style={[styles.actions, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+                         <TouchableOpacity 
+                            style={[styles.btnConfirm, { backgroundColor: theme.colors.primary }]} 
+                            onPress={handleConfirm}
+                        >
+                            <Text style={styles.btnTextActive}>{t('confirm')}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.btnConfirm} onPress={handleConfirm}>
-                            <Text style={styles.btnTextActive}>تأكيد</Text>
+                        <TouchableOpacity style={styles.btnCancel} onPress={onClose}>
+                            <Text style={[styles.btnText, { color: theme.colors.textSecondary }]}>{t('cancel')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -60,32 +76,25 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         width: '80%',
-        backgroundColor: '#1E293B',
         borderRadius: 16,
         padding: 24,
         borderWidth: 1,
-        borderColor: '#334155',
     },
     title: {
-        color: '#F8FAFC',
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
     },
     input: {
-        backgroundColor: '#0F172A',
-        color: '#F8FAFC',
         padding: 16,
         borderRadius: 12,
         fontSize: 20,
         textAlign: 'center',
         borderWidth: 1,
-        borderColor: '#334155',
         marginBottom: 24,
     },
     actions: {
-        flexDirection: 'row',
         justifyContent: 'space-between',
     },
     btnCancel: {
@@ -95,14 +104,12 @@ const styles = StyleSheet.create({
     },
     btnConfirm: {
         flex: 1,
-        backgroundColor: '#10B981',
         padding: 12,
         borderRadius: 8,
         alignItems: 'center',
-        marginLeft: 10,
+        marginHorizontal: 5,
     },
     btnText: {
-        color: '#94A3B8',
         fontSize: 16,
     },
     btnTextActive: {
