@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Modal, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useSettings } from '../context/SettingsContext';
 
 export default function AddDhikrModal({ visible, onClose, onConfirm }) {
     const [text, setText] = useState('');
     const [count, setCount] = useState('1');
+    const { t } = useTranslation();
+    const { theme, language } = useSettings();
+
+    const isRTL = language === 'ar';
+    const textAlign = isRTL ? 'right' : 'left';
 
     const handleConfirm = () => {
         const num = parseInt(count, 10);
@@ -25,36 +32,56 @@ export default function AddDhikrModal({ visible, onClose, onConfirm }) {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.overlay}
             >
-                <View style={styles.modalContainer}>
-                    <Text style={styles.title}>إضافة ذكر جديد</Text>
+                <View style={[styles.modalContainer, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+                    <Text style={[styles.title, { color: theme.colors.primary }]}>{t('addDhikrTitle')}</Text>
 
-                    <Text style={styles.label}>نص الذكر</Text>
+                    <Text style={[styles.label, { color: theme.colors.text, textAlign }]}>{t('dhikrText')}</Text>
                     <TextInput
-                        style={[styles.input, styles.textArea]}
+                        style={[
+                            styles.input, 
+                            styles.textArea, 
+                            { 
+                                backgroundColor: theme.colors.background, 
+                                color: theme.colors.text, 
+                                borderColor: theme.colors.border,
+                                textAlign 
+                            }
+                        ]}
                         multiline
-                        placeholder="اكتب الذكر هنا..."
-                        placeholderTextColor="#64748B"
+                        placeholder={t('dhikrPlaceholder')}
+                        placeholderTextColor={theme.colors.textSecondary}
                         value={text}
                         onChangeText={setText}
                     />
 
-                    <Text style={styles.label}>عدد التكرار</Text>
+                    <Text style={[styles.label, { color: theme.colors.text, textAlign }]}>{t('count')}</Text>
                     <TextInput
-                        style={styles.input}
+                        style={[
+                            styles.input, 
+                            { 
+                                backgroundColor: theme.colors.background, 
+                                color: theme.colors.text, 
+                                borderColor: theme.colors.border,
+                                textAlign 
+                            }
+                        ]}
                         keyboardType="number-pad"
-                        placeholder="عدد"
-                        placeholderTextColor="#64748B"
+                        placeholder={t('countPlaceholder')}
+                        placeholderTextColor={theme.colors.textSecondary}
                         value={count}
                         onChangeText={setCount}
                         maxLength={4}
                     />
 
-                    <View style={styles.actions}>
-                        <TouchableOpacity style={styles.btnCancel} onPress={onClose}>
-                            <Text style={styles.btnText}>إلغاء</Text>
+                    <View style={[styles.actions, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+                         <TouchableOpacity 
+                            style={[styles.btnConfirm, { backgroundColor: theme.colors.primary }]} 
+                            onPress={handleConfirm}
+                        >
+                            <Text style={styles.btnTextActive}>{t('add')}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.btnConfirm} onPress={handleConfirm}>
-                            <Text style={styles.btnTextActive}>إضافة</Text>
+                        <TouchableOpacity style={styles.btnCancel} onPress={onClose}>
+                            <Text style={[styles.btnText, { color: theme.colors.textSecondary }]}>{t('cancel')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -72,33 +99,24 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         width: '90%',
-        backgroundColor: '#1E293B',
         borderRadius: 16,
         padding: 24,
         borderWidth: 1,
-        borderColor: '#334155',
     },
     title: {
-        color: '#10B981',
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
     },
     label: {
-        color: '#F8FAFC',
         marginBottom: 8,
-        textAlign: 'right',
     },
     input: {
-        backgroundColor: '#0F172A',
-        color: '#F8FAFC',
         padding: 12,
         borderRadius: 8,
         fontSize: 16,
-        textAlign: 'right',
         borderWidth: 1,
-        borderColor: '#334155',
         marginBottom: 16,
     },
     textArea: {
@@ -106,7 +124,6 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top',
     },
     actions: {
-        flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 10,
     },
@@ -117,14 +134,12 @@ const styles = StyleSheet.create({
     },
     btnConfirm: {
         flex: 1,
-        backgroundColor: '#10B981',
         padding: 12,
         borderRadius: 8,
         alignItems: 'center',
-        marginLeft: 10,
+        marginHorizontal: 5,
     },
     btnText: {
-        color: '#94A3B8',
         fontSize: 16,
     },
     btnTextActive: {

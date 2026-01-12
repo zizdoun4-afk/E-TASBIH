@@ -1,23 +1,50 @@
-# Electronic Tasbeeh App
+# Electronic Tasbeeh (E-TASBIH)
 
 ![Banner Image](https://via.placeholder.com/1200x400?text=Electronic+Tasbeeh+App)
 
 ## Description
 
-A clean, minimal app for Dhikr and Istighfar featuring a random daily Quranic Ayah, haptic feedback, and custom counters. Designed to help you maintain your daily spiritual routine with ease and elegance.
+E-TASBIH is a modern, feature-rich Islamic application designed for Dhikr and Istighfar. It combines spiritual tranquility with modern technology, offering a highly customizable experience with support for multiple languages, themes, and personalized settings.
 
-## Features
+## 🚀 New Features (v2.0)
 
-- **Daily Quran Verse**: Receive a random Ayah from the Quran every time you launch the app.
-- **Predefined & Custom Counters**: Quickly select from 33, 100, or 1000 counts, or enter your own custom target.
-- **Haptic Feedback**: Experience satisfying vibration feedback on every tap to keep track without looking.
-- **Daily Effort Tracker**: Your progress is saved automatically.
-- **Persistent Storage**: Never lose your count; data is stored locally on your device.
-- **Morning/Evening Adhkar**: Access curated lists for morning and evening remembrances.
+### 🌍 Multilingual Support
+The app is now fully localized in **7 languages**, catering to a global audience:
+- **Arabic (العربية)**
+- **English**
+- **French (Français)**
+- **Spanish (Español)**
+- **Amazigh (Tamazight)**
+- **Hindi (हिन्दी)**
+- **Chinese (中文)**
+
+### 🎨 Advanced Theming & Customization
+- **Dark & Light Modes**: Seamlessly switch between modes to suit your environment (Night/Day).
+- **7 Color Themes**: Personalize the app with your favorite accent color (Emerald, Blue, Purple, Amber, Red, Teal, Pink).
+
+### ⚙️ Enhanced Settings
+- **Haptic Feedback Control**: Toggle vibration on/off for a tactile tasbeeh experience.
+- **Notification Management**: Schedule and manage reminders for Morning and Evening Adhkar.
+- **Global Settings**: Persist your language and theme preferences automatically.
+
+### 📜 Core Features
+- **Daily Quran Verse**: Receive a random Ayah from the Quran upon launching the app.
+- **Smart Counter**: Select from presets (33, 100, 1000) or set a **Custom Target**.
+- **Adhkar Library**: Comprehensive lists for Morning and Evening Azkar with counters.
+- **Progress Tracking**: Daily effort tracker saves your progress locally.
+- **About Screen**: View app version, open-source details, and used libraries.
+
+## 🛠 Tech Stack
+
+- **Framework**: React Native (Expo SDK 54)
+- **Navigation**: React Navigation (Stack)
+- **Storage**: AsyncStorage
+- **Localization**: i18next & react-i18next
+- **Features**: Expo Haptics, Expo Notifications, Expo Constants
 
 ## Installation
 
-To get this project up and running on your local machine, follow these steps:
+To get this project up and running on your local machine:
 
 1.  **Clone the repository:**
     ```bash
@@ -36,12 +63,12 @@ To get this project up and running on your local machine, follow these steps:
     ```
 
 4.  **Run on Device:**
-    - Download the **Expo Go** app on your iOS or Android device.
-    - Scan the QR code displayed in your terminal.
+    - Download **Expo Go** on Android/iOS.
+    - Scan the QR code.
 
 ## Support
 
-If you find this project useful and would like to support its development, you can buy me a coffee!
+If you find this project useful and would like to support its development:
 
 <a href="https://paypal.me/zizdoun4">
   <img src="https://img.shields.io/badge/Donate-PayPal-blue.svg" alt="Donate with PayPal" />
@@ -51,4 +78,4 @@ If you find this project useful and would like to support its development, you c
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is Open Source and licensed under the MIT License.

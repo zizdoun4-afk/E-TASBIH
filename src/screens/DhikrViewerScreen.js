@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDhikr } from '../context/DhikrContext';
+import { useSettings } from '../context/SettingsContext';
+import { useTranslation } from 'react-i18next';
 import AddDhikrModal from '../components/AddDhikrModal';
 
 export default function DhikrViewerScreen() {
     const [activeTab, setActiveTab] = useState('morning');
     const [showAddModal, setShowAddModal] = useState(false);
     const { morningAzkar, eveningAzkar, addCustomAzkar } = useDhikr();
+    const { theme, language } = useSettings();
+    const { t } = useTranslation();
 
     const data = activeTab === 'morning' ? morningAzkar : eveningAzkar;
+    const isRTL = language === 'ar';
+    const flexDirection = isRTL ? 'row-reverse' : 'row';
+    const textAlign = isRTL ? 'right' : 'left';
 
     const handleAddConfirm = (text, count) => {
         addCustomAzkar(activeTab, text, count);
@@ -17,30 +24,46 @@ export default function DhikrViewerScreen() {
     };
 
     const renderItem = ({ item }) => (
-        <View style={styles.card}>
-            <Text style={styles.cardTitle}>{item.text}</Text>
-            <Text style={styles.cardArabic}>{item.arabic}</Text>
-            <View style={styles.badge}>
-                <Text style={styles.badgeText}>تكرار: {item.count}</Text>
+        <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+            <Text style={[styles.cardTitle, { color: theme.colors.primary, textAlign }]}>{item.text}</Text>
+            {item.arabic && item.arabic !== item.text && (
+                 <Text style={[styles.cardArabic, { color: theme.colors.text, textAlign }]}>{item.arabic}</Text>
+            )}
+            <View style={[styles.badge, { backgroundColor: theme.colors.border, alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}>
+                <Text style={[styles.badgeText, { color: theme.colors.textSecondary }]}>{t('count')}: {item.count}</Text>
             </View>
         </View>
     );
 
     return (
-        <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
             {/* Tabs */}
-            <View style={styles.tabContainer}>
+            <View style={[styles.tabContainer, { backgroundColor: theme.colors.surface, flexDirection }]}>
                 <TouchableOpacity
-                    style={[styles.tab, activeTab === 'morning' && styles.activeTab]}
+                    style={[
+                        styles.tab, 
+                        activeTab === 'morning' && { backgroundColor: theme.colors.border }
+                    ]}
                     onPress={() => setActiveTab('morning')}
                 >
-                    <Text style={[styles.tabText, activeTab === 'morning' && styles.activeTabText]}>أذكار الصباح</Text>
+                    <Text style={[
+                        styles.tabText, 
+                        { color: theme.colors.textSecondary },
+                        activeTab === 'morning' && { color: theme.colors.primary, fontWeight: 'bold' }
+                    ]}>{t('morningAzkar')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.tab, activeTab === 'evening' && styles.activeTab]}
+                    style={[
+                        styles.tab, 
+                        activeTab === 'evening' && { backgroundColor: theme.colors.border }
+                    ]}
                     onPress={() => setActiveTab('evening')}
                 >
-                    <Text style={[styles.tabText, activeTab === 'evening' && styles.activeTabText]}>أذكار المساء</Text>
+                    <Text style={[
+                        styles.tabText, 
+                        { color: theme.colors.textSecondary },
+                        activeTab === 'evening' && { color: theme.colors.primary, fontWeight: 'bold' }
+                    ]}>{t('eveningAzkar')}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -53,7 +76,11 @@ export default function DhikrViewerScreen() {
 
             {/* Floating Action Button */}
             <TouchableOpacity
-                style={styles.fab}
+                style={[
+                    styles.fab, 
+                    { backgroundColor: theme.colors.primary },
+                    isRTL ? { left: 20 } : { right: 20 }
+                ]}
                 onPress={() => setShowAddModal(true)}
             >
                 <Text style={styles.fabText}>+</Text>
@@ -71,11 +98,8 @@ export default function DhikrViewerScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F172A',
     },
     tabContainer: {
-        flexDirection: 'row-reverse',
-        backgroundColor: '#1E293B',
         padding: 10,
         justifyContent: 'center',
     },
@@ -85,59 +109,40 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 8,
     },
-    activeTab: {
-        backgroundColor: '#334155',
-    },
     tabText: {
-        color: '#94A3B8',
         fontSize: 16,
-        fontWeight: 'bold',
-    },
-    activeTabText: {
-        color: '#10B981',
     },
     listContent: {
         padding: 16,
-        paddingBottom: 120, // Increased space for FAB
+        paddingBottom: 120,
     },
     card: {
-        backgroundColor: '#1E293B',
         borderRadius: 12,
         padding: 16,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#334155',
     },
     cardTitle: {
-        color: '#10B981',
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 8,
-        textAlign: 'right',
     },
     cardArabic: {
-        color: '#F8FAFC',
         fontSize: 16,
         lineHeight: 28,
-        textAlign: 'right',
         marginBottom: 12,
     },
     badge: {
-        alignSelf: 'flex-start',
-        backgroundColor: '#334155',
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 12,
     },
     badgeText: {
-        color: '#E2E8F0',
         fontSize: 12,
     },
     fab: {
         position: 'absolute',
         bottom: 20,
-        left: 20, // Check RTL placement
-        backgroundColor: '#10B981',
         width: 56,
         height: 56,
         borderRadius: 28,

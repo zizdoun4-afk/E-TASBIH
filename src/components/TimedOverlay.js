@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Animated, TouchableOpacity } from 'react-native';
 import { QURANIC_VERSES } from '../data/dhikrPresets';
+import { useTranslation } from 'react-i18next';
+import { useSettings } from '../context/SettingsContext';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function TimedOverlay({ onDismiss }) {
     const [verse, setVerse] = useState('');
     const fadeAnim = new Animated.Value(0);
+    const { t } = useTranslation();
+    const { theme } = useSettings();
 
     useEffect(() => {
-        // Pick random verse
         const randomIndex = Math.floor(Math.random() * QURANIC_VERSES.length);
         setVerse(QURANIC_VERSES[randomIndex]);
 
-        // Fade In
         Animated.timing(fadeAnim, {
             toValue: 1,
             duration: 1000,
             useNativeDriver: true,
         }).start();
 
-        // Auto dismiss after 6 seconds
         const timer = setTimeout(() => {
             handleDismiss();
         }, 6000);
@@ -40,10 +41,17 @@ export default function TimedOverlay({ onDismiss }) {
 
     return (
         <View style={styles.overlayContainer} pointerEvents="box-none">
-            <Animated.View style={[styles.card, { opacity: fadeAnim }]}>
-                <Text style={styles.verseText}>{verse}</Text>
+            <Animated.View style={[
+                styles.card, 
+                { 
+                    backgroundColor: theme.colors.surface, 
+                    borderColor: theme.colors.border,
+                    opacity: fadeAnim 
+                }
+            ]}>
+                <Text style={[styles.verseText, { color: theme.colors.text }]}>{verse}</Text>
                 <TouchableOpacity onPress={handleDismiss}>
-                    <Text style={styles.closeText}>اضغط للإخفاء</Text>
+                    <Text style={[styles.closeText, { color: theme.colors.textSecondary }]}>{t('tapToHide')}</Text>
                 </TouchableOpacity>
             </Animated.View>
         </View>
@@ -55,17 +63,15 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.7)', // Semi-transparent background
+        backgroundColor: 'rgba(0,0,0,0.7)',
         zIndex: 1000,
     },
     card: {
         width: width * 0.85,
         padding: 24,
-        backgroundColor: '#1E293B',
         borderRadius: 16,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#334155',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
@@ -73,7 +79,6 @@ const styles = StyleSheet.create({
         elevation: 10,
     },
     verseText: {
-        color: '#F8FAFC',
         fontSize: 18,
         fontStyle: 'italic',
         textAlign: 'center',
@@ -81,7 +86,6 @@ const styles = StyleSheet.create({
         lineHeight: 28,
     },
     closeText: {
-        color: '#94A3B8',
         fontSize: 12,
     },
 });

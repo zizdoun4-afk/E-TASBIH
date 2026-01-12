@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
 import { getRandomVerse } from '../utils/quranUtils';
+import { useTranslation } from 'react-i18next';
+import { useSettings } from '../context/SettingsContext';
 
 const { width } = Dimensions.get('window');
 
 export default function SplashScreen({ onFinish, verseData }) {
-    // verseData is passed from App.js to ensure stability
     const [verse, setVerse] = useState(verseData);
+    const { t } = useTranslation();
+    const { theme } = useSettings();
 
     useEffect(() => {
-        // If verseData wasn't ready when mounted (unlikely), set it when it updates
         if (verseData) {
             setVerse(verseData);
         } else if (!verse) {
-            // Fallback fetch if prop is missing
             try {
                 const v = getRandomVerse();
                 setVerse(v);
@@ -27,15 +28,15 @@ export default function SplashScreen({ onFinish, verseData }) {
     }, [verseData]);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             {/* Top Section */}
             <View style={styles.topSection}>
-                <Text style={styles.verseLabel}>آية اليوم</Text>
+                <Text style={[styles.verseLabel, { color: theme.colors.primary }]}>{t('verseOfDay')}</Text>
                 <View style={styles.textBox}>
-                    <Text style={styles.verseText}>
-                        {verse ? verse.text : "جاري التحميل..."}
+                    <Text style={[styles.verseText, { color: theme.colors.text }]}>
+                        {verse ? verse.text : t('loading')}
                     </Text>
-                    {verse && <Text style={styles.verseRef}>{verse.fullRef}</Text>}
+                    {verse && <Text style={[styles.verseRef, { color: theme.colors.textSecondary }]}>{verse.fullRef}</Text>}
                 </View>
             </View>
 
@@ -43,16 +44,19 @@ export default function SplashScreen({ onFinish, verseData }) {
             <View style={styles.centerSection}>
                 <Image
                     source={require('../../assets/tasbih_theme.png')}
-                    style={styles.image}
+                    style={[styles.image, { tintColor: theme.colors.primary }]} // Optional tint
                     resizeMode="contain"
                 />
-                <Text style={styles.appTitle}>اذكر الله يذكرك</Text>
+                <Text style={[styles.appTitle, { color: theme.colors.primary }]}>{t('appSlogan')}</Text>
             </View>
 
             {/* Bottom Section */}
             <View style={styles.bottomSection}>
-                <TouchableOpacity style={styles.enterBtn} onPress={onFinish}>
-                    <Text style={styles.enterBtnText}>دخول</Text>
+                <TouchableOpacity 
+                    style={[styles.enterBtn, { backgroundColor: theme.colors.surface, borderColor: theme.colors.primary }]} 
+                    onPress={onFinish}
+                >
+                    <Text style={[styles.enterBtnText, { color: theme.colors.text }]}>{t('enter')}</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -62,7 +66,6 @@ export default function SplashScreen({ onFinish, verseData }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F172A',
         paddingVertical: 50,
         paddingHorizontal: 20,
         justifyContent: 'space-between',
@@ -81,26 +84,23 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     verseLabel: {
-        color: '#10B981',
         fontSize: 18,
         marginBottom: 15,
         fontWeight: 'bold',
     },
     textBox: {
-        minHeight: 100, // Reserve space to prevent layout jump
+        minHeight: 100,
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
     },
     verseText: {
-        color: '#F8FAFC',
         fontSize: 20,
         textAlign: 'center',
         lineHeight: 34,
         fontWeight: '500',
     },
     verseRef: {
-        color: '#94A3B8',
         fontSize: 14,
         marginTop: 10,
     },
@@ -110,21 +110,18 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     appTitle: {
-        fontSize: 26,
+        fontSize: 24,
         fontWeight: 'bold',
-        color: '#10B981',
+        textAlign: 'center'
     },
     enterBtn: {
-        backgroundColor: '#1E293B',
         paddingVertical: 16,
         paddingHorizontal: 80,
         borderRadius: 30,
         borderWidth: 1,
-        borderColor: '#10B981',
         elevation: 5,
     },
     enterBtnText: {
-        color: '#F8FAFC',
         fontSize: 20,
         fontWeight: 'bold',
     }
