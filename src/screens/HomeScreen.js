@@ -61,28 +61,39 @@ export default function HomeScreen() {
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
             
-            {/* Daily Effort Card */}
-            <View style={[styles.dailyEffortCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, flexDirection }]}>
-                <View>
-                    <Text style={[styles.dailyEffortValue, { color: theme.colors.primary, textShadowColor: theme.colors.primary }]}>
-                        {dailyTotal}
-                    </Text>
-                    <Text style={[styles.dailyEffortSub, { color: theme.colors.textSecondary }]}>{t('tasbeeh', {defaultValue: 'Tasbeeh'})}</Text>
-                </View>
-                <View style={{ justifyContent: 'center' }}>
-                     <Text style={[styles.dailyEffortLabel, { color: theme.colors.textSecondary }]}>
-                        {t('count', {defaultValue: 'Count'})}
-                     </Text>
-                </View>
+            {/* Top Header */}
+            <View style={[styles.topHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <TouchableOpacity 
+                    style={[styles.iconBtn, { backgroundColor: theme.colors.surface }]}
+                    onPress={() => navigation.navigate('Settings')}
+                >
+                    <Text style={{ fontSize: 22 }}>⚙️</Text>
+                </TouchableOpacity>
+                
+                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('appName')}</Text>
+                
+                {/* Spacer to balance the header if needed, or another icon */}
+                <View style={{ width: 40 }} /> 
             </View>
 
-            {/* Daily Azkar Button */}
-            <TouchableOpacity
-                style={[styles.azkarBtn, { backgroundColor: theme.colors.background, borderColor: theme.colors.primary, flexDirection }]}
-                onPress={() => navigation.navigate('DhikrViewer')}
-            >
-                <Text style={[styles.azkarBtnText, { color: theme.colors.primary }]}>{t('viewAll', {defaultValue: 'Azkar'})}</Text>
-            </TouchableOpacity>
+            {/* Daily Effort Card */}
+            <View style={[styles.dailyEffortCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, flexDirection }]}>
+                {/* Left Side: Stats */}
+                <View style={{ flex: 1 }}>
+                    <Text style={[styles.dailyEffortValue, { color: theme.colors.primary, textShadowColor: theme.colors.primary, textAlign }]}>
+                        {dailyTotal}
+                    </Text>
+                    <Text style={[styles.dailyEffortSub, { color: theme.colors.textSecondary, textAlign }]}>{t('tasbeeh', {defaultValue: 'Tasbeeh'})}</Text>
+                </View>
+
+                {/* Right Side: Azkar Shortcut Icon */}
+                <TouchableOpacity
+                    style={[styles.miniAzkarBtn, { backgroundColor: theme.colors.background, borderColor: theme.colors.primary }]}
+                    onPress={() => navigation.navigate('DhikrViewer')}
+                >
+                     <Text style={{ fontSize: 20 }}>📖</Text>
+                </TouchableOpacity>
+            </View>
 
             {/* Main Content Area */}
             <View style={styles.contentArea}>
@@ -185,6 +196,25 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
+    topHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 15,
+        paddingHorizontal: 5,
+    },
+    iconBtn: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 2,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
     contentArea: {
         flex: 1,
         justifyContent: 'center',
@@ -197,8 +227,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
         borderWidth: 1,
-        justifyContent: 'center',
-        gap: 15,
+        justifyContent: 'space-between',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 12,
@@ -219,22 +248,14 @@ const styles = StyleSheet.create({
         marginTop: 5,
         fontWeight: '500',
     },
-    azkarBtn: {
-        paddingVertical: 12,
-        borderRadius: 16,
-        alignItems: 'center',
+    miniAzkarBtn: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
         justifyContent: 'center',
-        marginBottom: 8,
+        alignItems: 'center',
         borderWidth: 1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
         elevation: 3,
-    },
-    azkarBtnText: {
-        fontSize: 16,
-        fontWeight: '700',
-        letterSpacing: 0.5,
     },
     countSelectorContainer: {
         marginBottom: 5,

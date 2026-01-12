@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { LogBox } from 'react-native';
 
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
@@ -54,9 +54,11 @@ function MainNavigator({ initialVerse }) {
     );
   }
 
+  const baseTheme = theme.dark ? DarkTheme : DefaultTheme;
   const navTheme = {
-    dark: theme.dark,
+    ...baseTheme,
     colors: {
+      ...baseTheme.colors,
       primary: theme.colors.primary,
       background: theme.colors.background,
       card: theme.colors.surface,

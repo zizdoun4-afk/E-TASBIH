@@ -24,7 +24,6 @@ export default function SettingsScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation();
 
-    // Notification State
     const [morningTime, setMorningTime] = useState(new Date());
     const [eveningTime, setEveningTime] = useState(new Date());
     const [morningEnabled, setMorningEnabled] = useState(false);
@@ -32,7 +31,6 @@ export default function SettingsScreen() {
     const [showMorningPicker, setShowMorningPicker] = useState(false);
     const [showEveningPicker, setShowEveningPicker] = useState(false);
     
-    // Language Modal State
     const [langModalVisible, setLangModalVisible] = useState(false);
 
     const LANGUAGES = [
@@ -126,7 +124,10 @@ export default function SettingsScreen() {
                 
                 {/* Language Section */}
                 <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('language')}</Text>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.icon}>🌐</Text>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('language')}</Text>
+                    </View>
                     <TouchableOpacity 
                         style={[styles.rowBtn, { borderBottomColor: theme.colors.border }]}
                         onPress={() => setLangModalVisible(true)}
@@ -134,13 +135,16 @@ export default function SettingsScreen() {
                         <Text style={[styles.rowLabel, { color: theme.colors.text }]}>
                             {LANGUAGES.find(l => l.code === language)?.label || language}
                         </Text>
-                        <Text style={{color: theme.colors.textSecondary}}>›</Text>
+                        <Text style={{color: theme.colors.textSecondary, fontSize: 24}}>›</Text>
                     </TouchableOpacity>
                 </View>
 
                 {/* Theme Section */}
                 <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('theme')}</Text>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.icon}>🎨</Text>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('theme')}</Text>
+                    </View>
                     
                     {/* Dark Mode Toggle */}
                     <View style={styles.row}>
@@ -174,7 +178,10 @@ export default function SettingsScreen() {
 
                 {/* Haptics Section */}
                 <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('haptics')}</Text>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.icon}>📳</Text>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('haptics')}</Text>
+                    </View>
                     <View style={styles.row}>
                         <Text style={[styles.label, { color: theme.colors.text }]}>{t('enableHaptics')}</Text>
                         <Switch
@@ -185,11 +192,13 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
-                {/* Notifications Section (Existing Logic) */}
+                {/* Notifications Section */}
                 <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('notifications')}</Text>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.icon}>🔔</Text>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('notifications')}</Text>
+                    </View>
                     
-                    {/* Morning */}
                     <View style={styles.row}>
                         <View style={styles.textContainer}>
                             <Text style={[styles.label, { color: theme.colors.text }]}>{t('morningAzkar')}</Text>
@@ -216,7 +225,6 @@ export default function SettingsScreen() {
                         />
                     )}
 
-                    {/* Evening */}
                     <View style={styles.row}>
                         <View style={styles.textContainer}>
                             <Text style={[styles.label, { color: theme.colors.text }]}>{t('eveningAzkar')}</Text>
@@ -256,17 +264,16 @@ export default function SettingsScreen() {
                     style={[styles.linkBtn, { backgroundColor: theme.colors.surface }]}
                     onPress={() => navigation.navigate('About')}
                 >
-                    <Text style={[styles.linkBtnText, { color: theme.colors.text }]}>{t('about')}</Text>
+                    <Text style={[styles.linkBtnText, { color: theme.colors.text }]}>ℹ️ {t('about')}</Text>
                 </TouchableOpacity>
 
             </ScrollView>
 
-            {/* Language Selection Modal */}
             <Modal
                 transparent={true}
                 visible={langModalVisible}
                 onRequestClose={() => setLangModalVisible(false)}
-                animationType="fade"
+                animationType="slide"
             >
                 <View style={styles.modalOverlay}>
                     <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
@@ -287,7 +294,7 @@ export default function SettingsScreen() {
                                     }}
                                 >
                                     <Text style={[styles.langText, { color: theme.colors.text }]}>{item.label}</Text>
-                                    {language === item.code && <Text style={{ color: theme.colors.primary }}>✓</Text>}
+                                    {language === item.code && <Text style={{ color: theme.colors.primary, fontSize: 20 }}>✓</Text>}
                                 </TouchableOpacity>
                             )}
                         />
@@ -295,7 +302,7 @@ export default function SettingsScreen() {
                             style={[styles.closeBtn, { backgroundColor: theme.colors.border }]}
                             onPress={() => setLangModalVisible(false)}
                         >
-                            <Text style={{ color: theme.colors.text }}>Cancel</Text>
+                            <Text style={{ color: theme.colors.text, fontWeight: 'bold' }}>{t('cancel')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -309,19 +316,30 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        padding: 20,
+        padding: 16,
     },
     section: {
-        borderRadius: 12,
+        borderRadius: 16,
         padding: 20,
+        marginBottom: 16,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 20,
-        elevation: 2,
+    },
+    icon: {
+        fontSize: 20,
+        marginRight: 10,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'left',
     },
     row: {
         flexDirection: 'row',
@@ -329,31 +347,30 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20,
     },
-    textContainer: {
-        // alignItems: 'flex-start',
-    },
+    textContainer: {},
     label: {
         fontSize: 16,
-        marginBottom: 5,
     },
     timeText: {
         fontSize: 14,
+        marginTop: 4,
     },
     subLabel: {
         marginTop: 10,
-        marginBottom: 10,
+        marginBottom: 12,
         fontSize: 14,
+        fontWeight: '600',
     },
     colorContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
     },
     colorCircle: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        margin: 8,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        margin: 6,
         elevation: 2,
     },
     saveBtn: {
@@ -372,6 +389,8 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         alignItems: 'center',
         marginBottom: 40,
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
     linkBtnText: {
         fontSize: 16,
@@ -380,41 +399,43 @@ const styles = StyleSheet.create({
     rowBtn: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         paddingVertical: 12,
     },
     rowLabel: {
-        fontSize: 16,
+        fontSize: 17,
     },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'center',
-        padding: 20,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        justifyContent: 'flex-end',
     },
     modalContent: {
-        borderRadius: 12,
-        padding: 20,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        padding: 24,
         maxHeight: '80%',
     },
     modalTitle: {
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 15,
+        marginBottom: 20,
         textAlign: 'center',
     },
     langItem: {
-        padding: 15,
+        padding: 18,
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         borderBottomWidth: 1,
     },
     langText: {
-        fontSize: 16,
+        fontSize: 18,
     },
     closeBtn: {
-        padding: 15,
-        borderRadius: 10,
+        padding: 16,
+        borderRadius: 12,
         alignItems: 'center',
-        marginTop: 15,
+        marginTop: 16,
     },
 });

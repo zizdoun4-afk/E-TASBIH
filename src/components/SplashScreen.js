@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { getRandomVerse } from '../utils/quranUtils';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../context/SettingsContext';
@@ -40,13 +40,11 @@ export default function SplashScreen({ onFinish, verseData }) {
                 </View>
             </View>
 
-            {/* Middle Section */}
+            {/* Middle Section - Replaced Image with a Moon Icon */}
             <View style={styles.centerSection}>
-                <Image
-                    source={require('../../assets/tasbih_theme.png')}
-                    style={[styles.image, { tintColor: theme.colors.primary }]} // Optional tint
-                    resizeMode="contain"
-                />
+                <View style={[styles.moonContainer, { borderColor: theme.colors.primary + '30' }]}>
+                    <Text style={[styles.moonIcon, { color: theme.colors.primary }]}>🌙</Text>
+                </View>
                 <Text style={[styles.appTitle, { color: theme.colors.primary }]}>{t('appSlogan')}</Text>
             </View>
 
@@ -89,7 +87,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     textBox: {
-        minHeight: 100,
+        minHeight: 120,
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
@@ -104,10 +102,22 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 10,
     },
-    image: {
-        width: width * 0.45,
-        height: width * 0.45,
-        marginBottom: 15,
+    moonContainer: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
+        marginBottom: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+    },
+    moonIcon: {
+        fontSize: 60,
+        textAlign: 'center',
     },
     appTitle: {
         fontSize: 24,

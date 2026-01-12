@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from '../i18n';
-import { I18nManager } from 'react-native';
+import { I18nManager, useColorScheme } from 'react-native';
 import * as Updates from 'expo-updates';
 
 const SettingsContext = createContext();
@@ -19,8 +19,9 @@ export const THEME_COLORS = [
 ];
 
 export const SettingsProvider = ({ children }) => {
+    const systemColorScheme = useColorScheme();
     const [language, setLanguage] = useState(i18n.language);
-    const [isDarkMode, setIsDarkMode] = useState(true);
+    const [isDarkMode, setIsDarkMode] = useState(systemColorScheme === 'dark');
     const [primaryColor, setPrimaryColor] = useState(THEME_COLORS[0]);
     const [hapticsEnabled, setHapticsEnabled] = useState(true);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -39,11 +40,15 @@ export const SettingsProvider = ({ children }) => {
             if (storedLang) {
                 setLanguage(storedLang);
                 i18n.changeLanguage(storedLang);
-                // Handle RTL if needed, though simple i18n change often suffices for text
-                // For layout mirroring, we might need I18nManager.forceRTL and reload
             }
 
-            if (storedTheme !== null) setIsDarkMode(JSON.parse(storedTheme));
+            if (storedTheme !== null) {
+                setIsDarkMode(JSON.parse(storedTheme));
+            } else {
+                // If no stored preference, follow system
+                setIsDarkMode(systemColorScheme === 'dark');
+            }
+            
             if (storedColor) setPrimaryColor(storedColor);
             if (storedHaptics !== null) setHapticsEnabled(JSON.parse(storedHaptics));
             
@@ -58,18 +63,6 @@ export const SettingsProvider = ({ children }) => {
         setLanguage(lang);
         await i18n.changeLanguage(lang);
         await AsyncStorage.setItem('language', lang);
-        
-        const isRTL = ['ar', 'zgh'].includes(lang); // Arabic and Amazigh (often RTL in some contexts, but let's stick to Arabic for strict RTL)
-        // Note: Standard Amazigh (Tifinagh) is LTR, Arabic script Amazigh is RTL. 
-        // We'll assume 'ar' is the main RTL one. 
-        // If the app needs strict RTL layout switching:
-        /*
-        if (I18nManager.isRTL !== (lang === 'ar')) {
-             I18nManager.allowRTL(lang === 'ar');
-             I18nManager.forceRTL(lang === 'ar');
-             Updates.reloadAsync();
-        }
-        */
     };
 
     const toggleTheme = async () => {
