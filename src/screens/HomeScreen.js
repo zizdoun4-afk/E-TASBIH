@@ -12,13 +12,13 @@ const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
     const {
-        startNewSession, 
+        startNewSession,
         dailyDhikrQueue,
         setTargetCount,
         targetCount,
         dailyTotal
     } = useDhikr();
-    
+
     const { theme, language } = useSettings();
     const { t } = useTranslation();
     const navigation = useNavigation();
@@ -60,20 +60,20 @@ export default function HomeScreen() {
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-            
+
             {/* Top Header */}
             <View style={[styles.topHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={[styles.iconBtn, { backgroundColor: theme.colors.surface }]}
                     onPress={() => navigation.navigate('Settings')}
                 >
                     <Text style={{ fontSize: 22 }}>⚙️</Text>
                 </TouchableOpacity>
-                
+
                 <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('appName')}</Text>
-                
+
                 {/* Spacer to balance the header if needed, or another icon */}
-                <View style={{ width: 40 }} /> 
+                <View style={{ width: 40 }} />
             </View>
 
             {/* Daily Effort Card */}
@@ -83,7 +83,7 @@ export default function HomeScreen() {
                     <Text style={[styles.dailyEffortValue, { color: theme.colors.primary, textShadowColor: theme.colors.primary, textAlign }]}>
                         {dailyTotal}
                     </Text>
-                    <Text style={[styles.dailyEffortSub, { color: theme.colors.textSecondary, textAlign }]}>{t('tasbeeh', {defaultValue: 'Tasbeeh'})}</Text>
+                    <Text style={[styles.dailyEffortSub, { color: theme.colors.textSecondary, textAlign }]}>{t('tasbeeh', { defaultValue: 'Tasbeeh' })}</Text>
                 </View>
 
                 {/* Right Side: Azkar Shortcut Icon */}
@@ -91,7 +91,7 @@ export default function HomeScreen() {
                     style={[styles.miniAzkarBtn, { backgroundColor: theme.colors.background, borderColor: theme.colors.primary }]}
                     onPress={() => navigation.navigate('DhikrViewer')}
                 >
-                     <Text style={{ fontSize: 20 }}>📖</Text>
+                    <Text style={{ fontSize: 20 }}>📖</Text>
                 </TouchableOpacity>
             </View>
 
@@ -105,14 +105,14 @@ export default function HomeScreen() {
                             <TouchableOpacity
                                 key={count}
                                 style={[
-                                    styles.countBtn, 
+                                    styles.countBtn,
                                     { backgroundColor: theme.colors.border },
                                     targetCount === count && { backgroundColor: theme.colors.primary }
                                 ]}
                                 onPress={() => setTargetCount(count)}
                             >
                                 <Text style={[
-                                    styles.countBtnText, 
+                                    styles.countBtnText,
                                     { color: theme.colors.text },
                                     targetCount === count && { color: '#FFFFFF' }
                                 ]}>{count}</Text>
@@ -120,14 +120,14 @@ export default function HomeScreen() {
                         ))}
                         <TouchableOpacity
                             style={[
-                                styles.countBtn, 
+                                styles.countBtn,
                                 { backgroundColor: theme.colors.border },
                                 ![33, 100, 1000].includes(targetCount) && { backgroundColor: theme.colors.primary }
                             ]}
                             onPress={() => setShowCustomModal(true)}
                         >
                             <Text style={[
-                                styles.countBtnText, 
+                                styles.countBtnText,
                                 { color: theme.colors.text },
                                 ![33, 100, 1000].includes(targetCount) && { color: '#FFFFFF' }
                             ]}>
@@ -146,17 +146,20 @@ export default function HomeScreen() {
                                 <TouchableOpacity
                                     key={item.id}
                                     style={[
-                                        styles.card, 
-                                        { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                                        isSelected && { backgroundColor: theme.colors.primary + '20', borderColor: theme.colors.primary }
+                                        styles.card,
+                                        { backgroundColor: isSelected ? theme.colors.primary + '15' : theme.colors.surface },
                                     ]}
                                     onPress={() => handlePressDhikr(item)}
                                 >
-                                    {isSelected && <View style={[styles.indicator, { backgroundColor: theme.colors.primary, shadowColor: theme.colors.primary }]} />}
+                                    {isSelected && (
+                                        <View style={[styles.indicator, { backgroundColor: theme.colors.primary }]}>
+                                            <Text style={styles.indicatorText}>✓</Text>
+                                        </View>
+                                    )}
                                     <Text style={[
-                                        styles.cardText, 
-                                        { color: theme.colors.text },
-                                        isSelected && { fontWeight: 'bold' }
+                                        styles.cardText,
+                                        { color: isSelected ? theme.colors.primary : theme.colors.text },
+                                        isSelected && { fontWeight: '800' }
                                     ]}>{item.text}</Text>
                                 </TouchableOpacity>
                             );
@@ -169,7 +172,7 @@ export default function HomeScreen() {
             <View style={styles.footer}>
                 <TouchableOpacity
                     style={[
-                        styles.startBtn, 
+                        styles.startBtn,
                         { backgroundColor: theme.colors.primary, shadowColor: theme.colors.primary },
                         selectedDhikrIds.length === 0 && dailyDhikrQueue.length === 0 && { backgroundColor: theme.colors.border, shadowOpacity: 0 }
                     ]}
@@ -228,10 +231,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         borderWidth: 1,
         justifyContent: 'space-between',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
     },
     dailyEffortLabel: {
         fontSize: 16,
@@ -298,19 +297,22 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 4,
-        borderWidth: 1,
-        elevation: 2,
     },
     indicator: {
         position: 'absolute',
-        top: 6,
-        right: 6,
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.6,
-        shadowRadius: 4,
+        top: -6,
+        right: -6,
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 10,
+    },
+    indicatorText: {
+        color: '#FFFFFF',
+        fontSize: 12,
+        fontWeight: 'bold',
     },
     cardText: {
         textAlign: 'center',

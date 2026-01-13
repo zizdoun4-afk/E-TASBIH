@@ -27,7 +27,7 @@ export default function DhikrViewerScreen() {
         <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
             <Text style={[styles.cardTitle, { color: theme.colors.primary, textAlign }]}>{item.text}</Text>
             {item.arabic && item.arabic !== item.text && (
-                 <Text style={[styles.cardArabic, { color: theme.colors.text, textAlign }]}>{item.arabic}</Text>
+                <Text style={[styles.cardArabic, { color: theme.colors.text, textAlign }]}>{item.arabic}</Text>
             )}
             <View style={[styles.badge, { backgroundColor: theme.colors.border, alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}>
                 <Text style={[styles.badgeText, { color: theme.colors.textSecondary }]}>{t('count')}: {item.count}</Text>
@@ -41,26 +41,26 @@ export default function DhikrViewerScreen() {
             <View style={[styles.tabContainer, { backgroundColor: theme.colors.surface, flexDirection }]}>
                 <TouchableOpacity
                     style={[
-                        styles.tab, 
+                        styles.tab,
                         activeTab === 'morning' && { backgroundColor: theme.colors.border }
                     ]}
                     onPress={() => setActiveTab('morning')}
                 >
                     <Text style={[
-                        styles.tabText, 
+                        styles.tabText,
                         { color: theme.colors.textSecondary },
                         activeTab === 'morning' && { color: theme.colors.primary, fontWeight: 'bold' }
                     ]}>{t('morningAzkar')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[
-                        styles.tab, 
+                        styles.tab,
                         activeTab === 'evening' && { backgroundColor: theme.colors.border }
                     ]}
                     onPress={() => setActiveTab('evening')}
                 >
                     <Text style={[
-                        styles.tabText, 
+                        styles.tabText,
                         { color: theme.colors.textSecondary },
                         activeTab === 'evening' && { color: theme.colors.primary, fontWeight: 'bold' }
                     ]}>{t('eveningAzkar')}</Text>
@@ -77,7 +77,7 @@ export default function DhikrViewerScreen() {
             {/* Floating Action Button */}
             <TouchableOpacity
                 style={[
-                    styles.fab, 
+                    styles.fab,
                     { backgroundColor: theme.colors.primary },
                     isRTL ? { left: 20 } : { right: 20 }
                 ]}
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     },
     fab: {
         position: 'absolute',
-        bottom: 20,
+        bottom: 80,
         width: 56,
         height: 56,
         borderRadius: 28,

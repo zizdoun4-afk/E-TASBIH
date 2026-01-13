@@ -9,18 +9,18 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 
 export default function SettingsScreen() {
-    const { 
-        theme, 
-        language, 
-        changeLanguage, 
-        isDarkMode, 
-        toggleTheme, 
-        primaryColor, 
-        changePrimaryColor, 
-        hapticsEnabled, 
-        toggleHaptics 
+    const {
+        theme,
+        language,
+        changeLanguage,
+        isDarkMode,
+        toggleTheme,
+        primaryColor,
+        changePrimaryColor,
+        hapticsEnabled,
+        toggleHaptics
     } = useSettings();
-    
+
     const { t } = useTranslation();
     const navigation = useNavigation();
 
@@ -30,8 +30,9 @@ export default function SettingsScreen() {
     const [eveningEnabled, setEveningEnabled] = useState(false);
     const [showMorningPicker, setShowMorningPicker] = useState(false);
     const [showEveningPicker, setShowEveningPicker] = useState(false);
-    
+
     const [langModalVisible, setLangModalVisible] = useState(false);
+    const [notifModalVisible, setNotifModalVisible] = useState(false);
 
     const LANGUAGES = [
         { code: 'ar', label: 'العربية' },
@@ -121,21 +122,21 @@ export default function SettingsScreen() {
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
-                
+
                 {/* Language Section */}
                 <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.icon}>🌐</Text>
                         <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('language')}</Text>
                     </View>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={[styles.rowBtn, { borderBottomColor: theme.colors.border }]}
                         onPress={() => setLangModalVisible(true)}
                     >
                         <Text style={[styles.rowLabel, { color: theme.colors.text }]}>
                             {LANGUAGES.find(l => l.code === language)?.label || language}
                         </Text>
-                        <Text style={{color: theme.colors.textSecondary, fontSize: 24}}>›</Text>
+                        <Text style={{ color: theme.colors.textSecondary, fontSize: 24 }}>›</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -145,7 +146,7 @@ export default function SettingsScreen() {
                         <Text style={styles.icon}>🎨</Text>
                         <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('theme')}</Text>
                     </View>
-                    
+
                     {/* Dark Mode Toggle */}
                     <View style={styles.row}>
                         <Text style={[styles.label, { color: theme.colors.text }]}>
@@ -162,17 +163,25 @@ export default function SettingsScreen() {
                     {/* Color Picker */}
                     <Text style={[styles.subLabel, { color: theme.colors.textSecondary }]}>{t('colors')}</Text>
                     <View style={styles.colorContainer}>
-                        {THEME_COLORS.map((color, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                style={[
-                                    styles.colorCircle, 
-                                    { backgroundColor: color },
-                                    primaryColor === color && { borderWidth: 3, borderColor: theme.colors.text }
-                                ]}
-                                onPress={() => changePrimaryColor(color)}
-                            />
-                        ))}
+                        {THEME_COLORS.map((color, index) => {
+                            const isSelected = primaryColor === color;
+                            return (
+                                <TouchableOpacity
+                                    key={index}
+                                    style={[
+                                        styles.colorCircle,
+                                        { backgroundColor: color },
+                                    ]}
+                                    onPress={() => changePrimaryColor(color)}
+                                >
+                                    {isSelected && (
+                                        <View style={styles.colorCheckBadge}>
+                                            <Text style={styles.colorCheckText}>✓</Text>
+                                        </View>
+                                    )}
+                                </TouchableOpacity>
+                            );
+                        })}
                     </View>
                 </View>
 
@@ -198,69 +207,24 @@ export default function SettingsScreen() {
                         <Text style={styles.icon}>🔔</Text>
                         <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>{t('notifications')}</Text>
                     </View>
-                    
-                    <View style={styles.row}>
-                        <View style={styles.textContainer}>
-                            <Text style={[styles.label, { color: theme.colors.text }]}>{t('morningAzkar')}</Text>
-                            {morningEnabled && (
-                                <TouchableOpacity onPress={() => setShowMorningPicker(true)}>
-                                    <Text style={[styles.timeText, { color: theme.colors.textSecondary }]}>
-                                        {morningTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                        <Switch
-                            value={morningEnabled}
-                            onValueChange={setMorningEnabled}
-                            trackColor={{ false: "#767577", true: theme.colors.primary }}
-                        />
-                    </View>
-                    {showMorningPicker && (
-                        <DateTimePicker
-                            value={morningTime}
-                            mode="time"
-                            display="default"
-                            onChange={(e, d) => handleTimeChange(e, d, 'morning')}
-                        />
-                    )}
-
-                    <View style={styles.row}>
-                        <View style={styles.textContainer}>
-                            <Text style={[styles.label, { color: theme.colors.text }]}>{t('eveningAzkar')}</Text>
-                            {eveningEnabled && (
-                                <TouchableOpacity onPress={() => setShowEveningPicker(true)}>
-                                    <Text style={[styles.timeText, { color: theme.colors.textSecondary }]}>
-                                        {eveningTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                        <Switch
-                            value={eveningEnabled}
-                            onValueChange={setEveningEnabled}
-                            trackColor={{ false: "#767577", true: theme.colors.primary }}
-                        />
-                    </View>
-                    {showEveningPicker && (
-                        <DateTimePicker
-                            value={eveningTime}
-                            mode="time"
-                            display="default"
-                            onChange={(e, d) => handleTimeChange(e, d, 'evening')}
-                        />
-                    )}
-
-                    <TouchableOpacity 
-                        style={[styles.saveBtn, { backgroundColor: theme.colors.primary }]} 
-                        onPress={saveNotificationSettings}
+                    <TouchableOpacity
+                        style={[styles.rowBtn, { borderBottomColor: theme.colors.border }]}
+                        onPress={() => setNotifModalVisible(true)}
                     >
-                        <Text style={styles.saveBtnText}>{t('saveSettings')}</Text>
+                        <Text style={[styles.rowLabel, { color: theme.colors.text }]}>
+                            {t('adkarReminders')}
+                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 14, marginRight: 8 }}>
+                                {morningEnabled || eveningEnabled ? 'ON' : 'OFF'}
+                            </Text>
+                            <Text style={{ color: theme.colors.textSecondary, fontSize: 24 }}>›</Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
 
                 {/* About Link */}
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={[styles.linkBtn, { backgroundColor: theme.colors.surface }]}
                     onPress={() => navigation.navigate('About')}
                 >
@@ -269,6 +233,7 @@ export default function SettingsScreen() {
 
             </ScrollView>
 
+            {/* Language Modal */}
             <Modal
                 transparent={true}
                 visible={langModalVisible}
@@ -282,9 +247,9 @@ export default function SettingsScreen() {
                             data={LANGUAGES}
                             keyExtractor={item => item.code}
                             renderItem={({ item }) => (
-                                <TouchableOpacity 
+                                <TouchableOpacity
                                     style={[
-                                        styles.langItem, 
+                                        styles.langItem,
                                         { borderBottomColor: theme.colors.border },
                                         language === item.code && { backgroundColor: theme.colors.background }
                                     ]}
@@ -298,9 +263,94 @@ export default function SettingsScreen() {
                                 </TouchableOpacity>
                             )}
                         />
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             style={[styles.closeBtn, { backgroundColor: theme.colors.border }]}
                             onPress={() => setLangModalVisible(false)}
+                        >
+                            <Text style={{ color: theme.colors.text, fontWeight: 'bold' }}>{t('cancel')}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Notifications Modal */}
+            <Modal
+                transparent={true}
+                visible={notifModalVisible}
+                onRequestClose={() => setNotifModalVisible(false)}
+                animationType="slide"
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
+                        <Text style={[styles.modalTitle, { color: theme.colors.text }]}>{t('adkarReminders')}</Text>
+
+                        <View style={styles.row}>
+                            <View style={styles.textContainer}>
+                                <Text style={[styles.label, { color: theme.colors.text }]}>{t('morningAzkar')}</Text>
+                                <TouchableOpacity onPress={() => setShowMorningPicker(true)}>
+                                    <Text style={[styles.timeText, { color: theme.colors.primary, fontWeight: 'bold' }]}>
+                                        {morningTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                            <Switch
+                                value={morningEnabled}
+                                onValueChange={setMorningEnabled}
+                                trackColor={{ false: "#767577", true: theme.colors.primary }}
+                            />
+                        </View>
+                        {showMorningPicker && (
+                            <DateTimePicker
+                                value={morningTime}
+                                mode="time"
+                                display="default"
+                                onChange={(e, d) => {
+                                    handleTimeChange(e, d, 'morning');
+                                    if (Platform.OS !== 'ios') setShowMorningPicker(false);
+                                }}
+                            />
+                        )}
+
+                        <View style={styles.row}>
+                            <View style={styles.textContainer}>
+                                <Text style={[styles.label, { color: theme.colors.text }]}>{t('eveningAzkar')}</Text>
+                                <TouchableOpacity onPress={() => setShowEveningPicker(true)}>
+                                    <Text style={[styles.timeText, { color: theme.colors.primary, fontWeight: 'bold' }]}>
+                                        {eveningTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                            <Switch
+                                value={eveningEnabled}
+                                onValueChange={setEveningEnabled}
+                                trackColor={{ false: "#767577", true: theme.colors.primary }}
+                            />
+                        </View>
+                        {showEveningPicker && (
+                            <DateTimePicker
+                                value={eveningTime}
+                                mode="time"
+                                display="default"
+                                onChange={(e, d) => {
+                                    handleTimeChange(e, d, 'evening');
+                                    if (Platform.OS !== 'ios') setShowEveningPicker(false);
+                                }}
+                            />
+                        )}
+
+                        <TouchableOpacity
+                            style={[styles.saveBtn, { backgroundColor: theme.colors.primary, marginTop: 20 }]}
+                            onPress={async () => {
+                                await saveNotificationSettings();
+                                setNotifModalVisible(false);
+                            }}
+                        >
+                            <Text style={styles.saveBtnText}>{t('saveSettings')}</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.closeBtn, { backgroundColor: theme.colors.border }]}
+                            onPress={() => setNotifModalVisible(false)}
                         >
                             <Text style={{ color: theme.colors.text, fontWeight: 'bold' }}>{t('cancel')}</Text>
                         </TouchableOpacity>
@@ -322,11 +372,8 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         padding: 20,
         marginBottom: 16,
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.05)',
     },
     sectionHeader: {
         flexDirection: 'row',
@@ -367,11 +414,31 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
     },
     colorCircle: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        margin: 6,
-        elevation: 2,
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        margin: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.05)',
+    },
+    colorCheckBadge: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 1,
+    },
+    colorCheckText: {
+        color: '#000',
+        fontSize: 14,
+        fontWeight: 'bold',
     },
     saveBtn: {
         padding: 16,
